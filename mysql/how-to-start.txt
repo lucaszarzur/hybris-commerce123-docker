@@ -1,0 +1,5 @@
+## Build
+docker build . -f mysql.Dockerfile -t my-mysql-test
+
+## Run
+docker run -d --name my-mysql-test -v /docker/mysql/db:/var/lib/mysql my-mysql-test

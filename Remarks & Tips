@@ -1,0 +1,22 @@
+EN
+Remarks & Tips
+1. The entire Docker command process can be executed by a script file, called "docker_hybris.sh". Just configure it with the properties of your environment.
+2. There is the option to already initialize SAP Commerce 123 as soon as Hybris is installed. To do this, set the "INITIALIZE" environment variable to "true";
+3. Pay special attention to the defined variables in Dockerfile, specially the variable "INITIALIZE";
+4. Check the other arguments (ARG) and environment variabels (ENV) and adapt to your needs;
+5. For a better experience with SAP Commerce 123, and to avoid errors with Solr, it is better to disable SSL from it. Therefore, set the "USE_MYSQL_DB" environment variable to "false";
+6. In addition, it is necessary to update the Solr address with the URL of the network Docker, in addition to switching from HTTPS to HTTP, if you prefer, use the script "docker_hybris.sh";
+7. By default Hybris is configured with the HSQLDB Database. If you prefer to use MySQL, set the "USE_MYSQL_DB" environment variable to "true";
+8. Last but not least, remembering... use the "docker_hybris.sh" which contains a step by step execution of the whole process to get everything working :)**
+
+
+PT-BR
+OBSERVAÇÕES E DICAS
+1. Garantir que não há uma pasta "Commerce123Mod" folder definido;
+2. Há a opção de já efetuar o initialize do Commerce 123 assim que o Hybris for instalado. Para isso, faça configure a variável de ambiente "INITIALIZE" como "true";
+3. Tenha uma atenção especial com as variáveis definidas no Dockerfile, especialmente a variável "INITIALIZE";
+4. Verifique os outros argumentos (ARG) e variáveis de ambiente (ENV) e adapte para sua necessidade;
+5. Para melhor experiência com o Commerce123, e evitar erros com o Solr, é melhor desabilitar o SSL do mesmo. Sendo assim, configure a variável de ambiente "USE_MYSQL_DB" como "false";
+6. Além disso, é necessário atualizar o endereço do Solr com a URL do network Docker, além de trocar de HTTPS para HTTP, se preferir, use o script "docker_hybris.sh".
+7. Por default o Hybris vem configurado com o Banco de Dados HSQLDB. Caso você prefira usar o MySQL, configure a variável de ambiente "USE_MYSQL_DB" como "true";
+8. Por último, mas não menos importante, lembrando... use o "docker_hybris.sh" que contém um passo a passo de execução de todo o processo para deixar tudo funcionando :)
