@@ -76,7 +76,7 @@ This project adds the complete SAP Commerce 123 installation process via Docker.
 8. **Last but not least, remembering... use the "docker_hybris.sh" which contains a step by step execution of the whole process to get everything working :)**
 
 See a screenshot of "docker_hybris.sh" file:
-![](resources/docker_hybris_sh_print.png)
+![](resources/docker_hybris_sh_printscreen.png)
 
 
 ## Installing Docker
