@@ -85,6 +85,65 @@ copy_db_driver(){
     cp "$DOCKER_HOME/$DB_DRIVER" "$HYBRIS_COMMERCE123_DIR/hybris/bin/platform/lib/dbdriver/"
 }
 
+configure_mysql_as_default_bd_local_properties(){
+    echo "`date +%d'/'%m'/'%Y' - '%H':'%M':'%S` - Configuring mysql as default db - Adding the properties to local properties" >> "$LOG_FILE"
+
+    #db.url=jdbc:mysql://hostname:port/dbName?useConfigs=maxPerformance&characterEncoding=utf8&useSSL=false
+    mysql_db_properties_db_url="db.url=jdbc:mysql://localhost:3306/commerce123mod?useConfigs=maxPerformance&characterEncoding=utf8&useSSL\=false"
+    mysql_db_properties_db_driver="db.driver=com.mysql.jdbc.Driver"
+    mysql_db_properties_db_username="db.username="
+    mysql_db_properties_db_password="db.password=$DB_PASSWORD"
+    solr_properties_disable_ssl="solrserver.instances.default.ssl.enabled=false" # disable Solr SSL
+
+    echo "$mysql_db_properties_db_url" >> "$HYBRIS_COMMERCE123_DIR/hybris/config/local.properties"
+    echo "$mysql_db_properties_db_driver" >> "$HYBRIS_COMMERCE123_DIR/hybris/config/local.properties"
+    echo "$mysql_db_properties_db_username" >> "$HYBRIS_COMMERCE123_DIR/hybris/config/local.properties"
+    echo "$mysql_db_properties_db_password" >> "$HYBRIS_COMMERCE123_DIR/hybris/config/local.properties"
+    echo "$solr_properties_disable_ssl" >> "$HYBRIS_COMMERCE123_DIR/hybris/config/local.properties" # disable Solr SSL
+
+    echo "`date +%d'/'%m'/'%Y' - '%H':'%M':'%S` - You have configured this Docker image with USE_MYSQL_DB as TRUE, but INITIALIZE as OFF, so the properties was 
+    added in local.properties, but you have to do initialize again if you want use mysql" >> "$LOG_FILE"
+
+    echo "`date +%d'/'%m'/'%Y' - '%H':'%M':'%S` - Configuring mysql as default db - Done! Do initialize in HAC!" >> "$LOG_FILE"
+}
+
+configure_mysql_as_default_bd_build_gradle(){
+    echo "`date +%d'/'%m'/'%Y' - '%H':'%M':'%S` - Configuring mysql as default db - Adding the properties to build.gradle of recipe" >> "$LOG_FILE"
+
+    DB_IP="172.100.0.102"
+    
+    #db.url=jdbc:mysql://hostname:port/dbName?useConfigs=maxPerformance&characterEncoding=utf8&useSSL=false
+    mysql_db_properties_db_url="property 'db.url', 'jdbc:mysql://$DB_IP:3306/commerce123mod?useConfigs=maxPerformance&characterEncoding=utf8&useSSL=false'"
+    mysql_db_properties_db_driver="property 'db.driver', 'com.mysql.jdbc.Driver'"
+    mysql_db_properties_db_username="property 'db.username', '$DB_USERNAME'"
+    mysql_db_properties_db_password="property 'db.password', '$DB_PASSWORD'"
+    mysql_db_properties_db_tableprefix="property 'db.tableprefix', ''"
+    mysql_db_properties_optional_tabledefs="property 'mysql.optional.tabledefs', 'CHARSET=utf8 COLLATE=utf8_bin'"
+    mysql_db_properties_tabletype="property 'mysql.tabletype', 'InnoDB'"
+    mysql_db_properties_allow_fractional_seconds="property 'mysql.allow.fractional.seconds', 'false'"
+    solr_properties_disable_ssl="property 'solrserver.instances.default.ssl.enabled', 'false'" 
+    
+
+    ## Add the properties after match with 'localProperties' in gradle.file. Writed here in DESC order to be ASC order in gradle file
+    # disable Solr SSL
+    sed -i "/localProperties {/a /* Disable SSL Solr */" $HYBRIS_COMMERCE123_DIR/installer/recipes/$RECIPE/build.gradle 
+    sed -i "/localProperties {/a $solr_properties_disable_ssl" $HYBRIS_COMMERCE123_DIR/installer/recipes/$RECIPE/build.gradle
+    sed -i "/localProperties {/a " $HYBRIS_COMMERCE123_DIR/installer/recipes/$RECIPE/build.gradle
+    
+    # add db properties
+    sed -i "/localProperties {/a $mysql_db_properties_allow_fractional_seconds" $HYBRIS_COMMERCE123_DIR/installer/recipes/$RECIPE/build.gradle
+    sed -i "/localProperties {/a $mysql_db_properties_tabletype" $HYBRIS_COMMERCE123_DIR/installer/recipes/$RECIPE/build.gradle
+    sed -i "/localProperties {/a $mysql_db_properties_optional_tabledefs" $HYBRIS_COMMERCE123_DIR/installer/recipes/$RECIPE/build.gradle
+    sed -i "/localProperties {/a $mysql_db_properties_db_tableprefix" $HYBRIS_COMMERCE123_DIR/installer/recipes/$RECIPE/build.gradle
+    sed -i "/localProperties {/a $mysql_db_properties_db_password" $HYBRIS_COMMERCE123_DIR/installer/recipes/$RECIPE/build.gradle
+    sed -i "/localProperties {/a $mysql_db_properties_db_username" $HYBRIS_COMMERCE123_DIR/installer/recipes/$RECIPE/build.gradle
+    sed -i "/localProperties {/a $mysql_db_properties_db_driver" $HYBRIS_COMMERCE123_DIR/installer/recipes/$RECIPE/build.gradle
+    sed -i "/localProperties {/a $mysql_db_properties_db_url" $HYBRIS_COMMERCE123_DIR/installer/recipes/$RECIPE/build.gradle
+    sed -i "/localProperties {/a /* Database */" $HYBRIS_COMMERCE123_DIR/installer/recipes/$RECIPE/build.gradle
+
+    echo "`date +%d'/'%m'/'%Y' - '%H':'%M':'%S` - Configuring mysql as default db - Done!" >> "$LOG_FILE"
+}
+
 copy_ssh_keys(){
     echo "`date +%d'/'%m'/'%Y' - '%H':'%M':'%S` - Coping SSH keys to home" >> "$LOG_FILE"
     cd $HYBRIS_COMMERCE123_DIR
@@ -124,8 +183,17 @@ if [ "$1" = 'run' ]; then
 
         #copy_installer
 
-        copy_db_driver
-        
+        if [ "$USE_MYSQL_DB" = 'true' ]; then
+            copy_db_driver
+
+            if [ "$INITIALIZE" = 'true' ]; then
+                configure_mysql_as_default_bd_build_gradle
+            else
+                configure_mysql_as_default_bd_local_properties
+            fi;
+            
+        fi;
+
         run_installer
 
         echo "`date +%d'/'%m'/'%Y' - '%H':'%M':'%S` - ant clean all" >> "$LOG_FILE"

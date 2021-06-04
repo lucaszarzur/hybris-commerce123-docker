@@ -28,6 +28,8 @@ ENV DEVELOPER_NAME="Lucas Zarzur"
 ENV DEVELOPER_EMAIL="lucas12zarzur@gmail.com"
 ENV BRANCH_NAME=
 ENV INITIALIZE="true"
+ENV USE_MYSQL_DB="true"
+ENV USE_SOLR_SSL="false"
 ENV DOCKER_HOME=${DOCKER_HOME}
 
 ## Install linux packages
