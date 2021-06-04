@@ -70,10 +70,12 @@ This project adds the complete SAP Commerce 123 installation process via Docker.
 2. There is the option to already initialize SAP Commerce 123 as soon as Hybris is installed. To do this, set the "INITIALIZE" environment variable to "true";
 3. Pay special attention to the defined variables in Dockerfile, specially the variable "INITIALIZE";
 4. Check the other arguments (ARG) and environment variabels (ENV) and adapt to your needs;
-5. For a better experience with SAP Commerce 123, and to avoid errors with Solr, it is better to disable SSL from it. Therefore, set the "USE_MYSQL_DB" environment variable to "false";
+5. For a better experience with SAP Commerce 123, and to avoid errors with Solr, it is better to disable SSL from it. Therefore, set the "USE_SOLR_SSL" environment variable to "false";
 6. In addition, it is necessary to update the Solr address with the URL of the network Docker, in addition to switching from HTTPS to HTTP, if you prefer, use the script "docker_hybris.sh";
 7. By default Hybris is configured with the HSQLDB Database. If you prefer to use MySQL, set the "USE_MYSQL_DB" environment variable to "true";
 8. **Last but not least, remembering... use the "docker_hybris.sh" which contains a step by step execution of the whole process to get everything working :)**
+
+In the root folder of the repository, run: `./docker_hybris.sh`
 
 See a screenshot of "docker_hybris.sh" file:
 ![](resources/docker_hybris_sh_printscreen.png)
