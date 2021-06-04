@@ -31,6 +31,15 @@ do_start(){
     fi;
 }
 
+do_start_debug(){
+    current_user=`/usr/bin/whoami`
+    if [ "$current_user" = "$HYBRIS_COMMERCE123_USER" ]; then
+        cd "$HYBRIS_COMMERCE123_BIN_DIR"; ./hybrisserver.sh debug
+    else
+        /sbin/runuser -l  "$HYBRIS_COMMERCE123_USER" -c "cd $HYBRIS_COMMERCE123_BIN_DIR; ./hybrisserver.sh debug"
+    fi;
+}
+
 do_stop(){
     current_user=`/usr/bin/whoami`
     if [ "$current_user" = "$HYBRIS_COMMERCE123_USER" ]; then
@@ -100,13 +109,16 @@ case "$1" in
     start)
         do_start
     ;;
+    debug)
+        do_start_debug
+    ;;
     stop)
         do_stop
     ;;
     restart)
         do_stop
         sleep 15
-        do_start
+        do_start_debug
     ;;
     ant_clean|clean)
         do_ant_clean
@@ -124,7 +136,7 @@ case "$1" in
 	    do_status
 	;;
     *)
-        echo "Usage: $SCRIPTNAME {start|stop|status|restart|clean(ant_clean)|ant_all(all)|clean_all(ant_clean_all)|customize_clean_all(ant_customize_clean_all)}" >&2
+        echo "Usage: $SCRIPTNAME {start|debug|stop|status|restart|clean(ant_clean)|ant_all(all)|clean_all(ant_clean_all)|customize_clean_all(ant_customize_clean_all)}" >&2
         exit 3
     ;;
 esac
